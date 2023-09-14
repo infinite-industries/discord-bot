@@ -11,6 +11,9 @@ registry_user := "jswank"
 # this environment variable will be passed to podman login
 pass_var := "REGISTRY_PASSWORD"  
 
+# use podman or docker - just set DOCKER=podman or DOCKER=docker
+DOCKER := env_var_or_default("DOCKER","docker")
+
 # compile and run
 all: build run
 
@@ -35,15 +38,15 @@ run cmd=binary:
 
 # build a docker image
 build-image:
-  podman build -t {{image}} -f build/Dockerfile .
+  {{ DOCKER }} build -t {{image}} -f build/Dockerfile .
 
-# run a container via podman
+# run a container via docker
 run-container: 
-  podman run --rm -P --env-file .env --name {{ binary }} {{ image }}
+  {{ DOCKER }} run --rm -P --env-file .env --name {{ binary }} {{ image }}
 
 # remove the container
 @clean-container:
-  podman rm -f 
+  {{ DOCKER }} rm -f 
 
 # publish the image to the default registry
 publish: _publish
@@ -58,7 +61,7 @@ publish-quay: (_publish "quay.io")
 publish-docker: (_publish "docker.io")
 
 _publish registry=registry user=registry_user alt_tag=tag:
-  @ echo "${{ pass_var }}" | podman login {{registry}} -u {{user}} --password-stdin 
-  @ podman tag {{image}}:{{tag}} {{registry}}/{{image}}:{{alt_tag}}
-  @ podman push {{registry}}/{{image}}:{{alt_tag}}
-  @ podman logout {{registry}}
+  @ echo "${{ pass_var }}" | {{ DOCKER }} login {{registry}} -u {{user}} --password-stdin 
+  @ {{ DOCKER }} tag {{image}}:{{tag}} {{registry}}/{{image}}:{{alt_tag}}
+  @ {{ DOCKER }} push {{registry}}/{{image}}:{{alt_tag}}
+  @ {{ DOCKER }} logout {{registry}}
