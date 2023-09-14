@@ -2,7 +2,7 @@ set dotenv-load
 
 binary := "discord-bot"
 
-tag := `grep ^FROM build/Dockerfile | cut -d: -f2`
+tag := "latest"
 image := "infinite-industries/" + binary
 
 registry := "ghcr.io"

@@ -1,0 +1,34 @@
+## Discord Bot
+- DevOps features
+    - add prometheus metrics ala https://prometheus.io/docs/guides/go-application/
+        - chat (type) requests
+        - requests by server
+        - seconds connected to Discord
+        - API (type) requests to II
+            - success
+            - error
+        - service uptime
+    - list of connected servers
+    - logs to stdout
+    - build process
+- Create appropriate docker image
+- Deploy to staging
+  - monitoring
+  - ansible playbook
+
+## Scraper
+  - Scrape Burl, Submit to Infinite API
+  - See infinite-industries/infinite-scrapers for a jupiter notebook
+  - Algorithm:
+    - Fetch <a> for all upcoming events from theburl.lex
+      - Fetch JSON from theburltickets.com for all events -> `burl_events[]`
+        - save state - pickle, etc- to avoid superfluous refetch
+    - Fetch all *upcoming* (verified and unverified) events from Infinite API:
+    - Filter for events at The Burl ->  `ii_burl_events[]`
+    - `burl_events.map({})`
+      - next if event exists for time in `ii_burl_events[]`:
+      - retrieve image, upload to our S3 bucket
+        - if fail -> quit? error?
+      - submit event to infinite API:
+        - use our S3 image URL
+        - if fail -> quit? error?
