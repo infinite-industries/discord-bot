@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,9 +13,14 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+var logger *slog.Logger
+
 func init() {}
 
 func main() {
+	logger := slog.New(slog.NewJSONHandler(os.Stderr, nil))
+	slog.SetDefault(logger)
+
 	token := os.Getenv("BOT_TOKEN")
 	if token == "" {
 		log.Fatalln("No $BOT_TOKEN given.")
@@ -30,10 +36,9 @@ func main() {
 		// request a list of 100 guilds
 		guilds, _ := h.s.Guilds()
 		//		var guild_names []string
-		log.Print("The bot is on the following servers: ")
 		for _, g := range guilds {
 			//			guild_names = append(guild_names, g.Name)
-			log.Printf("\tserver=%s, id=%s", g.Name, g.ID.String())
+			logger.Info("server attachment", "server", g.Name, "id", g.ID.String())
 		}
 	})
 
