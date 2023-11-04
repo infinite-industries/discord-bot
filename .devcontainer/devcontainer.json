@@ -4,7 +4,7 @@
       "dockerFile": "Dockerfile",
       "context": "..",
       "args": {
-        "VARIANT": "1.20-bookworm"
+        "VARIANT": "1.21-bookworm"
       }
     },
 	  "runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined" ],
