@@ -2,7 +2,7 @@ set dotenv-load
 
 binary := "discord-bot"
 
-tag := "latest"
+tag := env_var_or_default("IMAGE_TAG","latest")
 image := "infinite-industries/" + binary
 
 registry := "ghcr.io"
