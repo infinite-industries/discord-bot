@@ -1,5 +1,5 @@
 ARG VARIANT="1"
-FROM mcr.microsoft.com/vscode/devcontainers/go:0-${VARIANT}
+FROM mcr.microsoft.com/vscode/devcontainers/go:${VARIANT}
 
 RUN apt-get update \
   && apt-get install -y postgresql-client tmux zsh neovim ansible
