@@ -23,12 +23,15 @@ func init() {
 
 func (h *handler) cmdFun(ctx context.Context, data cmdroute.CommandData) *api.InteractionResponseData {
 
-	// add logging here - if there is no response whatsover, what happened?
-
 	guild_id := data.Event.GuildID.String()
-	//	if guild_id == "" {
-	//		guild_id = "dm"
-	//	}
+	if guild_id == "" {
+		guild_id = "[direct message]"
+	}
+
+	channel_name := data.Event.Channel.Name
+	if channel_name == "" {
+		channel_name = "[direct message]"
+	}
 
 	if counter, err := bot_processed_requests_total.GetMetricWithLabelValues(guild_id); err != nil {
 		log.Printf("Error accessing metric counter")
@@ -38,7 +41,7 @@ func (h *handler) cmdFun(ctx context.Context, data cmdroute.CommandData) *api.In
 
 	// log request
 	// TODO: use h.s.Guild(guild_id) to get server name.
-	log.Printf("'%s' interacted in channel '%s', server id '%s'", data.Event.Sender().Username, data.Event.Channel.Name, data.Event.GuildID)
+	log.Printf("'%s' interacted in channel '%s', server id '%s'", data.Event.Sender().Username, channel_name, guild_id)
 	// fetch events
 	// TODO: is it possible for this to timeout w/out error & response?  See 10/25/2023 @ 21:49.
 	events, err := infinite_client.Events.CurrentVerified()
@@ -52,6 +55,8 @@ func (h *handler) cmdFun(ctx context.Context, data cmdroute.CommandData) *api.In
 	event := events[rand.Intn(len(events))]
 	// return a markdown response: [Title](URL)
 	output := fmt.Sprintf("[%s](https://infinite.industries/events/%s)", event.Title, event.ID)
+	log.Printf("Event: %s (%s)", event.Title, event.ID)
+
 	return &api.InteractionResponseData{
 		Content: option.NewNullableString(output),
 	}
